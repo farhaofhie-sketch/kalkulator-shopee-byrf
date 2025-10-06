@@ -6,7 +6,7 @@
   <title>Kalkulator Shopee byrf</title>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       background-color: #f6f6f6;
       color: #333;
@@ -14,24 +14,38 @@
     header {
       background-color: #ee4d2d;
       color: #fff;
-      padding: 15px 20px;
-      font-size: 1.4rem;
-      font-weight: 600;
+      padding: 15px;
       text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background: #fff;
+      border-bottom: 2px solid #eee;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #777;
+      transition: all 0.3s ease;
+    }
+    .tab.active {
+      color: #ee4d2d;
+      border-bottom: 3px solid #ee4d2d;
     }
     .container {
       max-width: 600px;
-      background: #fff;
       margin: 30px auto;
+      background: #fff;
       padding: 25px;
       border-radius: 10px;
       box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-      color: #ee4d2d;
     }
     .form-group {
       margin-bottom: 15px;
@@ -44,25 +58,23 @@
     input, select {
       width: 100%;
       padding: 10px;
-      font-size: 1rem;
       border: 1px solid #ccc;
       border-radius: 6px;
+      font-size: 1rem;
     }
     .btn {
-      width: 100%;
       background-color: #ee4d2d;
-      border: none;
       color: #fff;
+      border: none;
       padding: 12px;
+      width: 100%;
       font-size: 1rem;
+      font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
       margin-top: 10px;
-      font-weight: 600;
     }
-    .btn:hover {
-      background-color: #d94429;
-    }
+    .btn:hover { background-color: #d94429; }
     .results {
       margin-top: 20px;
       background: #fff8f6;
@@ -70,81 +82,121 @@
       padding: 15px;
       border-radius: 8px;
     }
-    .results h3 {
-      margin-top: 0;
-      color: #ee4d2d;
-      text-align: center;
-    }
     .results p {
-      margin: 8px 0;
       display: flex;
       justify-content: space-between;
+      margin: 5px 0;
       font-weight: 500;
     }
+    .copy-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      background: #ffbba8;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .copy-btn:hover { background: #ffa38a; }
     footer {
       text-align: center;
-      margin-top: 20px;
-      padding: 10px;
       color: #777;
+      margin: 20px 0;
       font-size: 0.9rem;
     }
+    #jual { display: none; }
   </style>
 </head>
 <body>
   <header>Kalkulator Shopee <span style="font-weight:300;">byrf</span></header>
 
-  <div class="container">
-    <h2>Hitung Biaya & Dana Diterima</h2>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('dana')">🛍️ Dana Diterima</div>
+    <div class="tab" onclick="showTab('jual')">💰 Harga Jual</div>
+  </div>
 
+  <div id="dana" class="container">
     <div class="form-group">
-      <label for="harga">Harga Produk (Rp)</label>
+      <label>Harga Produk (Rp)</label>
       <input type="number" id="harga" placeholder="Contoh: 100000">
     </div>
-
     <div class="form-group">
-      <label for="diskon">Diskon Penjual (Rp)</label>
+      <label>Diskon Penjual (Rp)</label>
       <input type="number" id="diskon" placeholder="Contoh: 10000">
     </div>
-
     <div class="form-group">
-      <label for="voucher">Voucher Penjual (Rp)</label>
+      <label>Voucher Penjual (Rp)</label>
       <input type="number" id="voucher" placeholder="Contoh: 5000">
     </div>
-
     <div class="form-group">
-      <label for="status">Status Penjual</label>
+      <label>Status Penjual</label>
       <select id="status">
         <option value="star">Star</option>
         <option value="starplus">Star+</option>
         <option value="mall">Mall</option>
       </select>
     </div>
-
     <div class="form-group">
       <label><input type="checkbox" id="promoXtra"> Ikut Promo XTRA</label>
     </div>
-
     <div class="form-group">
       <label><input type="checkbox" id="goXtra"> Ikut Gratis Ongkir XTRA</label>
     </div>
-
-    <button class="btn" onclick="hitung()">Hitung Sekarang</button>
-
-    <div id="hasil" class="results" style="display:none;">
-      <h3>Hasil Perhitungan</h3>
+    <button class="btn" onclick="hitungDana()">Hitung Dana Diterima</button>
+    <div id="hasilDana" class="results" style="display:none;">
       <p><span>Harga Akhir:</span> <span id="outHarga"></span></p>
       <p><span>Biaya Admin:</span> <span id="outAdmin"></span></p>
-      <p><span>Biaya Promo XTRA:</span> <span id="outPromo"></span></p>
-      <p><span>Biaya Proses Pesanan:</span> <span id="outProses"></span></p>
+      <p><span>Biaya Promo:</span> <span id="outPromo"></span></p>
+      <p><span>Biaya Proses:</span> <span id="outProses"></span></p>
       <hr>
       <p><strong><span>Dana Diterima:</span> <span id="outNet"></span></strong></p>
+      <button class="copy-btn" onclick="copyHasil('hasilDana')">📋 Salin Hasil</button>
+    </div>
+  </div>
+
+  <div id="jual" class="container">
+    <div class="form-group">
+      <label>Harga Modal (Rp)</label>
+      <input type="number" id="modal" placeholder="Contoh: 50000">
+    </div>
+    <div class="form-group">
+      <label>Ongkir (Rp)</label>
+      <input type="number" id="ongkir" placeholder="Contoh: 10000">
+    </div>
+    <div class="form-group">
+      <label>Biaya Admin (Rp)</label>
+      <input type="number" id="adminJual" placeholder="Contoh: 3000">
+    </div>
+    <div class="form-group">
+      <label>Biaya Promo (Rp)</label>
+      <input type="number" id="promoJual" placeholder="Contoh: 2000">
+    </div>
+    <div class="form-group">
+      <label>Margin Keuntungan (%)</label>
+      <input type="number" id="margin" placeholder="Contoh: 20">
+    </div>
+    <button class="btn" onclick="hitungJual()">Hitung Harga Jual</button>
+    <div id="hasilJual" class="results" style="display:none;">
+      <p><span>Total Modal:</span> <span id="outTotalModal"></span></p>
+      <p><span>Margin (%):</span> <span id="outMargin"></span></p>
+      <hr>
+      <p><strong><span>Harga Jual:</span> <span id="outHargaJual"></span></strong></p>
+      <button class="copy-btn" onclick="copyHasil('hasilJual')">📋 Salin Hasil</button>
     </div>
   </div>
 
   <footer>© 2025 byrf</footer>
 
   <script>
-    function hitung() {
+    function showTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+      document.querySelector('.tab[onclick="showTab(\'' + tab + '\')"]').classList.add('active');
+      document.getElementById(tab).style.display = 'block';
+    }
+
+    function hitungDana() {
       const harga = Number(document.getElementById('harga').value) || 0;
       const diskon = Number(document.getElementById('diskon').value) || 0;
       const voucher = Number(document.getElementById('voucher').value) || 0;
@@ -153,37 +205,46 @@
       const ikutGo = document.getElementById('goXtra').checked;
 
       const hargaFinal = Math.max(harga - diskon - voucher, 0);
-
       let adminRate = 0.03;
       if (status === 'star') adminRate = 0.025;
       if (status === 'starplus') adminRate = 0.02;
       if (status === 'mall') adminRate = 0.015;
 
       const biayaAdmin = hargaFinal * adminRate;
-
-      let biayaPromo = 0;
-      if (ikutPromo) {
-        biayaPromo = hargaFinal * 0.02;
-        if (biayaPromo > 20000) biayaPromo = 20000;
-      }
-
+      let biayaPromo = ikutPromo ? Math.min(hargaFinal * 0.02, 20000) : 0;
       const biayaProses = 1250;
-
-      let biayaGo = 0;
-      if (ikutGo) {
-        biayaGo = hargaFinal * 0.02;
-        if (biayaGo > 20000) biayaGo = 20000;
-      }
+      let biayaGo = ikutGo ? Math.min(hargaFinal * 0.02, 20000) : 0;
 
       const totalPotongan = biayaAdmin + biayaPromo + biayaProses + biayaGo;
       const danaDiterima = hargaFinal - totalPotongan;
 
-      document.getElementById('hasil').style.display = 'block';
+      document.getElementById('hasilDana').style.display = 'block';
       document.getElementById('outHarga').textContent = 'Rp ' + hargaFinal.toLocaleString('id');
       document.getElementById('outAdmin').textContent = 'Rp ' + biayaAdmin.toLocaleString('id');
       document.getElementById('outPromo').textContent = 'Rp ' + (biayaPromo + biayaGo).toLocaleString('id');
       document.getElementById('outProses').textContent = 'Rp ' + biayaProses.toLocaleString('id');
       document.getElementById('outNet').textContent = 'Rp ' + danaDiterima.toLocaleString('id');
+    }
+
+    function hitungJual() {
+      const modal = Number(document.getElementById('modal').value) || 0;
+      const ongkir = Number(document.getElementById('ongkir').value) || 0;
+      const admin = Number(document.getElementById('adminJual').value) || 0;
+      const promo = Number(document.getElementById('promoJual').value) || 0;
+      const margin = Number(document.getElementById('margin').value) || 0;
+
+      const totalModal = modal + ongkir + admin + promo;
+      const hargaJual = totalModal / (1 - margin / 100);
+
+      document.getElementById('hasilJual').style.display = 'block';
+      document.getElementById('outTotalModal').textContent = 'Rp ' + totalModal.toLocaleString('id');
+      document.getElementById('outMargin').textContent = margin + ' %';
+      document.getElementById('outHargaJual').textContent = 'Rp ' + hargaJual.toLocaleString('id');
+    }
+
+    function copyHasil(id) {
+      const hasilText = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(hasilText).then(() => alert('Hasil telah disalin!'));
     }
   </script>
 </body>

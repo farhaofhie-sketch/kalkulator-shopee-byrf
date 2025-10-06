@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator Shopee byrf</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #f6f6f6;
+      color: #333;
+    }
+    header {
+      background-color: #ee4d2d;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: 500; }
+    input, select {
+      width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem;
+    }
+    .btn {
+      background-color: #ee4d2d; color: #fff; border: none; padding: 12px; width: 100%;
+      font-size: 1rem; font-weight: 600; border-radius: 6px; cursor: pointer; margin-top: 10px;
+    }
+    .btn:hover { background-color: #d94429; }
+    .results {
+      margin-top: 20px; background: #fff8f6; border: 1px solid #ffd2c6; padding: 15px; border-radius: 8px;
+    }
+    .highlight {
+      font-size: 1.3rem; font-weight: 700; color: #ee4d2d;
+    }
+    footer { text-align: center; color: #777; margin: 20px 0; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <header>Kalkulator Shopee <span style="font-weight:300;">byrf</span></header>
+
+  <div class="container" id="dana">
+    <h2 style="text-align:center;color:#ee4d2d;">🛍️ Dana Diterima</h2>
+    <div class="form-group"><label>Harga Produk (Rp)</label><input type="number" id="harga"></div>
+    <div class="form-group"><label>Diskon Penjual (Rp)</label><input type="number" id="diskon"></div>
+    <div class="form-group"><label>Voucher Penjual (Rp)</label><input type="number" id="voucher"></div>
+    <div class="form-group"><label>Status Penjual</label>
+      <select id="status">
+        <option value="star">Star</option>
+        <option value="starplus">Star+</option>
+        <option value="mall">Mall</option>
+      </select></div>
+    <div class="form-group"><label><input type="checkbox" id="promoXtra"> Ikut Promo XTRA</label></div>
+    <div class="form-group"><label><input type="checkbox" id="goXtra"> Ikut Gratis Ongkir XTRA</label></div>
+    <button class="btn" onclick="hitungDana()">Hitung Dana Diterima</button>
+    <div id="hasilDana" class="results" style="display:none;">
+      <p class="highlight">Dana Diterima: <span id="outNet"></span></p>
+    </div>
+  </div>
+
+  <div class="container" id="hpp">
+    <h2 style="text-align:center;color:#ee4d2d;">💰 Harga Jual / HPP</h2>
+    <div class="form-group"><label>Harga Pokok Penjualan (Rp)</label><input type="number" id="hppHarga"></div>
+    <div class="form-group"><label>Perkiraan Harga Jual (Rp)</label>
+      <div style="display:flex;gap:10px;">
+        <input type="number" id="hargaJual" style="flex:3;">
+        <input type="number" id="margin" placeholder="Margin (%)" style="flex:1;">
+      </div>
+    </div>
+    <div class="form-group"><label>Biaya Iklan (%)</label><input type="number" id="iklan"></div>
+    <div class="form-group"><label>Biaya Afiliasi (%)</label><input type="number" id="afiliasi"></div>
+    <div class="form-group"><label>Biaya Admin (%)</label><input type="number" id="admin"></div>
+    <div class="form-group"><label>Promo Toko</label>
+      <div style="display:flex;gap:10px;">
+        <input type="number" id="promoNilai" placeholder="Nominal / Persen">
+        <select id="promoTipe" style="width:120px;">
+          <option value="%">%</option>
+          <option value="rp">Rp</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Biaya Pengemasan (Rp)</label><input type="number" id="kemas" value="1250" disabled></div>
+    <button class="btn" onclick="hitungHPP()">Hitung Hasil</button>
+    <div id="hasilHPP" class="results" style="display:none;text-align:center;">
+      <p class="highlight">Dengan Harga Jual : <span id="outHargaJual"></span></p>
+      <p class="highlight">Estimasi Keuntungan : <span id="outKeuntungan"></span></p>
+      <p class="highlight">Persentase Keuntungan : <span id="outPersen"></span></p>
+    </div>
+  </div>
+
+  <footer>© 2025 byrf</footer>
+
+  <script>
+    function hitungDana() {
+      const harga = Number(document.getElementById('harga').value)||0;
+      const diskon = Number(document.getElementById('diskon').value)||0;
+      const voucher = Number(document.getElementById('voucher').value)||0;
+      const status = document.getElementById('status').value;
+      const hargaFinal = Math.max(harga - diskon - voucher, 0);
+      let adminRate = 0.03;
+      if (status === 'star') adminRate = 0.025;
+      if (status === 'starplus') adminRate = 0.02;
+      if (status === 'mall') adminRate = 0.015;
+      const danaDiterima = hargaFinal - (hargaFinal * adminRate) - 1250;
+      document.getElementById('hasilDana').style.display='block';
+      document.getElementById('outNet').textContent='Rp '+danaDiterima.toLocaleString('id');
+    }
+
+    function hitungHPP() {
+      const hpp = Number(document.getElementById('hppHarga').value)||0;
+      const jual = Number(document.getElementById('hargaJual').value)||0;
+      const margin = Number(document.getElementById('margin').value)||0;
+      const iklan = Number(document.getElementById('iklan').value)||0;
+      const aff = Number(document.getElementById('afiliasi').value)||0;
+      const admin = Number(document.getElementById('admin').value)||0;
+      const promoVal = Number(document.getElementById('promoNilai').value)||0;
+      const promoTipe = document.getElementById('promoTipe').value;
+      const kemas = 1250;
+
+      let totalBiaya = hpp + kemas + (jual * (iklan+aff+admin)/100);
+      totalBiaya += (promoTipe === '%') ? jual * promoVal/100 : promoVal;
+
+      const keuntungan = jual - totalBiaya;
+      const persen = (keuntungan / jual) * 100;
+
+      document.getElementById('hasilHPP').style.display='block';
+      document.getElementById('outHargaJual').textContent='Rp '+jual.toLocaleString('id');
+      document.getElementById('outKeuntungan').textContent='Rp '+keuntungan.toLocaleString('id');
+      document.getElementById('outPersen').textContent=persen.toFixed(2)+'%';
+    }
+  </script>
+</body>
+</html>

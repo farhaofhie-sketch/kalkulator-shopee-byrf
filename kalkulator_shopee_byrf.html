@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator Shopee byrf</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      background-color: #f6f6f6;
+      color: #333;
+    }
+    header {
+      background-color: #ee4d2d;
+      color: #fff;
+      padding: 15px 20px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .container {
+      max-width: 600px;
+      background: #fff;
+      margin: 30px auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #ee4d2d;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .btn {
+      width: 100%;
+      background-color: #ee4d2d;
+      border: none;
+      color: #fff;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    .btn:hover {
+      background-color: #d94429;
+    }
+    .results {
+      margin-top: 20px;
+      background: #fff8f6;
+      border: 1px solid #ffd2c6;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .results h3 {
+      margin-top: 0;
+      color: #ee4d2d;
+      text-align: center;
+    }
+    .results p {
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+    }
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      padding: 10px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>Kalkulator Shopee <span style="font-weight:300;">byrf</span></header>
+
+  <div class="container">
+    <h2>Hitung Biaya & Dana Diterima</h2>
+
+    <div class="form-group">
+      <label for="harga">Harga Produk (Rp)</label>
+      <input type="number" id="harga" placeholder="Contoh: 100000">
+    </div>
+
+    <div class="form-group">
+      <label for="diskon">Diskon Penjual (Rp)</label>
+      <input type="number" id="diskon" placeholder="Contoh: 10000">
+    </div>
+
+    <div class="form-group">
+      <label for="voucher">Voucher Penjual (Rp)</label>
+      <input type="number" id="voucher" placeholder="Contoh: 5000">
+    </div>
+
+    <div class="form-group">
+      <label for="status">Status Penjual</label>
+      <select id="status">
+        <option value="star">Star</option>
+        <option value="starplus">Star+</option>
+        <option value="mall">Mall</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label><input type="checkbox" id="promoXtra"> Ikut Promo XTRA</label>
+    </div>
+
+    <div class="form-group">
+      <label><input type="checkbox" id="goXtra"> Ikut Gratis Ongkir XTRA</label>
+    </div>
+
+    <button class="btn" onclick="hitung()">Hitung Sekarang</button>
+
+    <div id="hasil" class="results" style="display:none;">
+      <h3>Hasil Perhitungan</h3>
+      <p><span>Harga Akhir:</span> <span id="outHarga"></span></p>
+      <p><span>Biaya Admin:</span> <span id="outAdmin"></span></p>
+      <p><span>Biaya Promo XTRA:</span> <span id="outPromo"></span></p>
+      <p><span>Biaya Proses Pesanan:</span> <span id="outProses"></span></p>
+      <hr>
+      <p><strong><span>Dana Diterima:</span> <span id="outNet"></span></strong></p>
+    </div>
+  </div>
+
+  <footer>© 2025 byrf</footer>
+
+  <script>
+    function hitung() {
+      const harga = Number(document.getElementById('harga').value) || 0;
+      const diskon = Number(document.getElementById('diskon').value) || 0;
+      const voucher = Number(document.getElementById('voucher').value) || 0;
+      const status = document.getElementById('status').value;
+      const ikutPromo = document.getElementById('promoXtra').checked;
+      const ikutGo = document.getElementById('goXtra').checked;
+
+      const hargaFinal = Math.max(harga - diskon - voucher, 0);
+
+      let adminRate = 0.03;
+      if (status === 'star') adminRate = 0.025;
+      if (status === 'starplus') adminRate = 0.02;
+      if (status === 'mall') adminRate = 0.015;
+
+      const biayaAdmin = hargaFinal * adminRate;
+
+      let biayaPromo = 0;
+      if (ikutPromo) {
+        biayaPromo = hargaFinal * 0.02;
+        if (biayaPromo > 20000) biayaPromo = 20000;
+      }
+
+      const biayaProses = 1250;
+
+      let biayaGo = 0;
+      if (ikutGo) {
+        biayaGo = hargaFinal * 0.02;
+        if (biayaGo > 20000) biayaGo = 20000;
+      }
+
+      const totalPotongan = biayaAdmin + biayaPromo + biayaProses + biayaGo;
+      const danaDiterima = hargaFinal - totalPotongan;
+
+      document.getElementById('hasil').style.display = 'block';
+      document.getElementById('outHarga').textContent = 'Rp ' + hargaFinal.toLocaleString('id');
+      document.getElementById('outAdmin').textContent = 'Rp ' + biayaAdmin.toLocaleString('id');
+      document.getElementById('outPromo').textContent = 'Rp ' + (biayaPromo + biayaGo).toLocaleString('id');
+      document.getElementById('outProses').textContent = 'Rp ' + biayaProses.toLocaleString('id');
+      document.getElementById('outNet').textContent = 'Rp ' + danaDiterima.toLocaleString('id');
+    }
+  </script>
+</body>
+</html>
